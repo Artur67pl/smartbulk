@@ -1,5 +1,7 @@
 # Builds the installable module zip and publishes a GitHub release when a
-# version tag is pushed, e.g. `git tag v2.0.0 && git push origin v2.0.0`.
+# version tag is pushed (e.g. `git tag v2.0.0 && git push origin v2.0.0`), or
+# when run by hand (Actions → Release → Run workflow): then it releases the
+# version in smartbulk.php from the chosen branch and creates the v<version> tag.
 #
 # The zip contains a single `smartbulk/` folder (what PrestaShop's
 # "Upload a module" expects), built with `git archive` from the tagged commit;
@@ -9,6 +11,7 @@ name: Release
 on:
   push:
     tags: ['v*']
+  workflow_dispatch:
 
 permissions:
   contents: write
@@ -21,9 +24,17 @@ jobs:
 
       - name: Check tag matches module version
         run: |
-          TAG="${GITHUB_REF_NAME#v}"
           PHP_VERSION=$(sed -n "s/.*public const VERSION = '\([^']*\)'.*/\1/p" smartbulk.php)
           XML_VERSION=$(sed -n 's/.*<version><!\[CDATA\[\([^]]*\)\]\]><\/version>.*/\1/p' config.xml)
+          if [ "$GITHUB_EVENT_NAME" = "workflow_dispatch" ]; then
+            TAG="$PHP_VERSION"
+            if git ls-remote --exit-code --tags origin "refs/tags/v$TAG" >/dev/null; then
+              echo "::error::v$TAG is already released — bump SmartBulk::VERSION and config.xml first"
+              exit 1
+            fi
+          else
+            TAG="${GITHUB_REF_NAME#v}"
+          fi
           echo "tag=$TAG smartbulk.php=$PHP_VERSION config.xml=$XML_VERSION"
           if [ "$TAG" != "$PHP_VERSION" ] || [ "$TAG" != "$XML_VERSION" ]; then
             echo "::error::Tag v$TAG does not match SmartBulk::VERSION ($PHP_VERSION) / config.xml ($XML_VERSION)"
@@ -65,6 +76,8 @@ jobs:
 
       - uses: softprops/action-gh-release@v2
         with:
+          tag_name: v${{ env.VERSION }}
+          target_commitish: ${{ github.sha }}
           name: SmartBulk ${{ env.VERSION }}
           body_path: release-notes.md
           files: smartbulk-${{ env.VERSION }}.zip
