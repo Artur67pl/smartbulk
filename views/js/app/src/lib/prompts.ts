@@ -30,6 +30,7 @@ export const TASK_TYPE_LABELS: Record<TaskType, string> = {
 export const MODELS_BY_PROVIDER: Record<Provider, { id: string; label: string }[]> = {
   claude: [
     { id: 'claude-haiku-4-5',  label: 'Claude Haiku 4.5 (fast, cheap)' },
+    { id: 'claude-haiku-5-5',  label: 'Claude Haiku 5.5 (fastest, cheapest)' },
     { id: 'claude-sonnet-4-6', label: 'Claude Sonnet 4.6 (legacy, temperature)' },
     { id: 'claude-sonnet-5',   label: 'Claude Sonnet 5' },
     { id: 'claude-sonnet-5-5', label: 'Claude Sonnet 5.5 (balanced)' },

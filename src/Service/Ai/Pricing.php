@@ -20,6 +20,7 @@ final class Pricing
     /** @var array<string,array{in:float,out:float}> USD per 1M tokens */
     private const TABLE = [
         'claude-haiku-4-5'  => ['in' => 1.00,  'out' => 5.00],
+        'claude-haiku-5-5'  => ['in' => 0.10,  'out' => 0.50],
         'claude-sonnet-4-6' => ['in' => 3.00,  'out' => 15.00],
         'claude-opus-4-7'   => ['in' => 5.00,  'out' => 25.00],
         'claude-sonnet-5'   => ['in' => 2.00,  'out' => 10.00],
