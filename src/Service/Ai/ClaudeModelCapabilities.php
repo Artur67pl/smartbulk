@@ -90,10 +90,10 @@ final class ClaudeModelCapabilities
             'thinking_off'   => 'between_tools',
             'temperature'    => false,
         ],
-        // UNCERTAIN (temperature): the previous regex forwarded temperature to
-        // Opus 4.7, but Anthropic's API reference lists sampling params as
-        // removed (400) from Claude 4.7 on. Not verified against the API, so
-        // it is treated like an unknown model: temperature is not sent.
+        // No temperature: Anthropic's migration guide for Opus 4.7 says
+        // "The temperature, top_p, and top_k parameters are no longer accepted
+        // on Claude Opus 4.7. Requests that include them return a 400 error."
+        // (The previous regex still forwarded them.)
         'claude-opus-4-7' => [
             'effort'         => self::EFFORT_LEVELS,
             'default_effort' => 'high',

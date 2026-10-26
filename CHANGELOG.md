@@ -21,8 +21,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Per-model request rules live in one table, `ClaudeModelCapabilities` (mirrored in
   `views/js/app/src/lib/prompts.ts`), replacing the sampling regex in `ClaudeProvider`.
   Unknown model ids get no temperature/top_p, effort or thinking fields.
-- Claude Opus 4.7 no longer receives temperature/top_p (Anthropic lists sampling params as
-  removed from Claude 4.7 on; not verified against the API).
+- Claude Opus 4.7 no longer receives temperature/top_p: per Anthropic's migration guide the
+  model rejects them with a 400 error.
 - Saving a new prompt version keeps params the editor doesn't manage (`target_field`,
   `target_lang`, `top_p`, …) instead of dropping them.
 
