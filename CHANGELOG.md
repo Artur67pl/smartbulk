@@ -7,6 +7,25 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+- **Effort and thinking controls in the prompt editor** (Claude models that support them).
+  Stored as `params.effort` / `params.thinking` in the prompt version JSON — no schema change.
+  The editor offers only what the selected model accepts: temperature is greyed out where the
+  model rejects it, the Effort list appears only on models with `output_config.effort`, and
+  thinking can't be switched off together with `xhigh`/`max`. A hint/warning on Max tokens
+  reminds that thinking tokens count toward the limit.
+- `tests/unit/ClaudeRequestBodyTest.php` — plain-PHP unit tests for the Claude request body
+  (`php tests/unit/ClaudeRequestBodyTest.php`, no PrestaShop needed).
+
+### Changed
+- Per-model request rules live in one table, `ClaudeModelCapabilities` (mirrored in
+  `views/js/app/src/lib/prompts.ts`), replacing the sampling regex in `ClaudeProvider`.
+  Unknown model ids get no temperature/top_p, effort or thinking fields.
+- Claude Opus 4.7 no longer receives temperature/top_p (Anthropic lists sampling params as
+  removed from Claude 4.7 on; not verified against the API).
+- Saving a new prompt version keeps params the editor doesn't manage (`target_field`,
+  `target_lang`, `top_p`, …) instead of dropping them.
+
 ## [1.0.6] — 2026-08-31
 
 ### Changed

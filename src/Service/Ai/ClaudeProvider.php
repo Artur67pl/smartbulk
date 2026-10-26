@@ -33,7 +33,7 @@ final class ClaudeProvider implements AIProviderInterface
     }
 
     /**
-     * @param array{model?:string,temperature?:float,max_tokens?:int,top_p?:float} $params
+     * @param array{model?:string,temperature?:float,max_tokens?:int,top_p?:float,effort?:string,thinking?:string} $params
      */
     public function generate(string $systemPrompt, string $userPrompt, array $params): AIResponse
     {
@@ -43,26 +43,7 @@ final class ClaudeProvider implements AIProviderInterface
         }
 
         $model = $params['model'] ?? 'claude-haiku-4-5';
-
-        $body = [
-            'model'      => $model,
-            'max_tokens' => (int) ($params['max_tokens'] ?? 512),
-            'system'     => $systemPrompt,
-            'messages'   => [
-                ['role' => 'user', 'content' => $userPrompt],
-            ],
-        ];
-        // Sampling params (temperature/top_p) were removed from the API on the
-        // generation-5 models (Haiku 5.5, Sonnet 5, Opus 5, Fable 5, ...) -- sending them
-        // now returns a 400 ("temperature is deprecated for this model") instead
-        // of being ignored. Only forward them to models that still accept them.
-        $supportsSampling = !preg_match('/^claude-(?:haiku|sonnet|opus|fable|mythos)-5(?:-\d+)?$/', $model);
-        if ($supportsSampling && isset($params['temperature'])) {
-            $body['temperature'] = (float) $params['temperature'];
-        }
-        if ($supportsSampling && isset($params['top_p'])) {
-            $body['top_p'] = (float) $params['top_p'];
-        }
+        $body = self::buildRequestBody($systemPrompt, $userPrompt, $params);
 
         $start = microtime(true);
         [$status, $response] = $this->httpPost(self::API_URL, $body, [
@@ -99,6 +80,30 @@ final class ClaudeProvider implements AIProviderInterface
             provider:   'claude',
             stopReason: $response['stop_reason'] ?? null,
         );
+    }
+
+    /**
+     * Messages API request body. Which optional fields (temperature, top_p,
+     * output_config.effort, thinking) are sent per model is decided by
+     * ClaudeModelCapabilities — fields a model rejects are left out.
+     *
+     * @param array<string,mixed> $params
+     * @return array<string,mixed>
+     */
+    public static function buildRequestBody(string $systemPrompt, string $userPrompt, array $params): array
+    {
+        $model = (string) ($params['model'] ?? 'claude-haiku-4-5');
+
+        $body = [
+            'model'      => $model,
+            'max_tokens' => (int) ($params['max_tokens'] ?? 512),
+            'system'     => $systemPrompt,
+            'messages'   => [
+                ['role' => 'user', 'content' => $userPrompt],
+            ],
+        ];
+
+        return $body + ClaudeModelCapabilities::requestFields($model, $params);
     }
 
     /**

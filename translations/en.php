@@ -568,3 +568,18 @@ $_MODULE['<{smartbulk}prestashop>smartbulk_04211bd9ce88ddf97b4f3d7f575ff225'] = 
 $_MODULE['<{smartbulk}prestashop>smartbulk_fe434dcc19aea29e5bac8ea26b33ca89'] = 'Each matching product will get {feature} = {value}.';
 $_MODULE['<{smartbulk}prestashop>smartbulk_02173abb23f8d1261336c13db6990669'] = 'A custom feature value will be created.';
 $_MODULE['<{smartbulk}prestashop>smartbulk_5744ec3e5250e10233dadb015f7782ea'] = 'PrestaShop allows multiple values for the same feature, so existing values are kept.';
+$_MODULE['<{smartbulk}prestashop>smartbulk_48bee23029a9bf67d77647ce7f45a65f'] = 'This model does not accept temperature — the value is not sent.';
+$_MODULE['<{smartbulk}prestashop>smartbulk_aea1e0a59f4645b4042153119bcf3564'] = 'Output length cap — thinking tokens count toward it, leave headroom.';
+$_MODULE['<{smartbulk}prestashop>smartbulk_dfe127da0c8221f83ab0a811ccdf7b57'] = 'Low limit with thinking on: the reply may be cut off with no text (stop_reason: max_tokens). Consider at least {n}.';
+$_MODULE['<{smartbulk}prestashop>smartbulk_035b9ae578574cdf728d8760483d8041'] = 'Effort';
+$_MODULE['<{smartbulk}prestashop>smartbulk_9d9fedb4107393fb35df44981aaa3676'] = 'How much the model thinks and writes. Lower = cheaper and faster.';
+$_MODULE['<{smartbulk}prestashop>smartbulk_69d75540ecb7f0ac9fd09b549a3a5c4f'] = 'Default — not sent ({level})';
+$_MODULE['<{smartbulk}prestashop>smartbulk_098add0dc993c82a0ac5607605ba341b'] = ' — requires thinking on';
+$_MODULE['<{smartbulk}prestashop>smartbulk_e067b6f4f09910ce519d4a9e1a76b1d6'] = 'Thinking';
+$_MODULE['<{smartbulk}prestashop>smartbulk_8f0617472ea0662d7f82512fb77ccb9c'] = 'Always on for this model — control depth with effort.';
+$_MODULE['<{smartbulk}prestashop>smartbulk_7206e4f4292db46465d867d986bab0b9'] = 'Default — not sent (on by default)';
+$_MODULE['<{smartbulk}prestashop>smartbulk_69c8516a922003e87ca4d0792b20a8f4'] = 'Default — not sent (off by default)';
+$_MODULE['<{smartbulk}prestashop>smartbulk_e3de0ff6923731cbd07c928b9ee75200'] = 'On (adaptive)';
+$_MODULE['<{smartbulk}prestashop>smartbulk_d15305d7a4e34e02489c74a5ef542f36'] = 'Off';
+$_MODULE['<{smartbulk}prestashop>smartbulk_9d5a34293b706866c5cfdee8f698da94'] = 'Off (between_tools)';
+$_MODULE['<{smartbulk}prestashop>smartbulk_b0f7fad6fca58559bd39053ae242dccb'] = 'Thinking can only be switched off at effort high or lower.';
