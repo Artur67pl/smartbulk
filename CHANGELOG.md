@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.0.1] — 2026-10-26
+
+### Changed
+- Module author shown in the Module Manager is now "marcingajewski.pl (fork: Artur67pl)":
+  the original author stays first (AFL-3.0 attribution), followed by the fork maintainer.
+
 ## [2.0.0] — 2026-10-26
 
 First release of the [Artur67pl/smartbulk](https://github.com/Artur67pl/smartbulk) fork,

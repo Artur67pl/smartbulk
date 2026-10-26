@@ -3,7 +3,7 @@
 > Advanced bulk product management for PrestaShop, with an AI assistant.
 
 **Status:** v2.0.0 — fork of [GajewskiMarcin/smartbulk](https://github.com/GajewskiMarcin/smartbulk) 1.0.6, maintained at [Artur67pl/smartbulk](https://github.com/Artur67pl/smartbulk)
-**Author:** [marcingajewski.pl](https://marcingajewski.pl) (original module)
+**Author:** [marcingajewski.pl](https://marcingajewski.pl) (original module); fork maintained by [Artur67pl](https://github.com/Artur67pl)
 **License:** [AFL-3.0](LICENSE.md)
 **PrestaShop:** 8.x and 9.x
 **PHP:** 8.1+
