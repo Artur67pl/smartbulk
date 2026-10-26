@@ -238,7 +238,12 @@ final class AdminSmartBulkController extends CompatAdminController
             if ($module && method_exists($module, 'getI18nDictionary')) {
                 /** @var array<string,string> $dict */
                 $dict = $module->getI18nDictionary();
-                return $dict;
+                // $this->l() HTML-escapes; React renders text, so undo it here
+                // (otherwise quotes and < > show up as &quot; / &lt;).
+                return array_map(
+                    static fn (string $s): string => htmlspecialchars_decode($s, ENT_QUOTES),
+                    $dict
+                );
             }
         } catch (\Throwable $e) { /* fall through to empty dict */ }
         return [];
