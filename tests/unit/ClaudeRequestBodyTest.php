@@ -65,7 +65,7 @@ check('sonnet-4-6 gets temperature', ['temperature' => 0.4], extras(body('claude
 foreach (['claude-haiku-5-5', 'claude-sonnet-5', 'claude-sonnet-5-5', 'claude-opus-5', 'claude-opus-5-5'] as $m) {
     check("$m: no temperature/top_p", [], extras(body($m, $legacy + ['top_p' => 0.9])));
 }
-check('opus-4-7 (uncertain): no temperature', [], extras(body('claude-opus-4-7', $legacy)));
+check('opus-4-7: no temperature (rejected by the API)', [], extras(body('claude-opus-4-7', $legacy)));
 check('unknown model: nothing optional', [], extras(body('claude-future-9', $legacy + ['effort' => 'low', 'thinking' => 'adaptive'])));
 
 echo "Effort\n";

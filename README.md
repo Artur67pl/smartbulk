@@ -191,8 +191,8 @@ so a prompt never fails with a 400 because of these fields.
 | Claude Opus 5.5 | no | low…max (medium) | always on | not possible |
 | Unknown / other model ids | no | — | not configurable | — |
 
-¹ Not verified against the API; Anthropic's reference lists sampling parameters as removed
-from Claude 4.7 on. The table lives in `src/Service/Ai/ClaudeModelCapabilities.php`, mirrored
+¹ Per Anthropic's migration guide, `temperature`, `top_p` and `top_k` are no longer accepted
+on Claude Opus 4.7 — requests that include them return a 400 error. The table lives in `src/Service/Ai/ClaudeModelCapabilities.php`, mirrored
 in `views/js/app/src/lib/prompts.ts` — keep both in sync when adding a model.
 
 ---

@@ -85,7 +85,7 @@ export const CLAUDE_MODEL_CAPS: Record<string, ClaudeModelCaps> = {
   'claude-sonnet-4-6': { effort: ['low', 'medium', 'high', 'max'],    defaultEffort: 'high',   thinking: 'default_off', thinkingOff: 'disabled',      temperature: true },
   'claude-sonnet-5':   { effort: ALL_EFFORT,                          defaultEffort: 'high',   thinking: 'default_on',  thinkingOff: 'disabled',      temperature: false },
   'claude-sonnet-5-5': { effort: ALL_EFFORT,                          defaultEffort: 'high',   thinking: 'default_on',  thinkingOff: 'between_tools', temperature: false },
-  // temperature uncertain for Opus 4.7 — see the PHP table.
+  // Opus 4.7 rejects temperature/top_p (Anthropic migration guide) — see the PHP table.
   'claude-opus-4-7':   { effort: ALL_EFFORT,                          defaultEffort: 'high',   thinking: 'default_off', thinkingOff: 'disabled',      temperature: false },
   'claude-opus-5':     { effort: ALL_EFFORT,                          defaultEffort: 'high',   thinking: 'default_on',  thinkingOff: 'disabled',      temperature: false },
   'claude-opus-5-5':   { effort: ALL_EFFORT,                          defaultEffort: 'medium', thinking: 'always_on',   thinkingOff: null,            temperature: false },
