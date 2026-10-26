@@ -49,7 +49,7 @@ class SmartBulk extends Module
     public const MODULE_NAME = 'smartbulk';
 
     /** @var string Single source of truth for the module version (mirrored in config.xml). */
-    public const VERSION = '2.0.0';
+    public const VERSION = '2.0.1';
 
     /** @var string[] Hooks to register on install */
     private const HOOKS = [
@@ -70,7 +70,7 @@ class SmartBulk extends Module
         $this->name = self::MODULE_NAME;
         $this->tab = 'administration';
         $this->version = self::VERSION;
-        $this->author = 'marcingajewski.pl';
+        $this->author = 'marcingajewski.pl (fork: Artur67pl)';
         $this->need_instance = 0;
         $this->bootstrap = true;
 
