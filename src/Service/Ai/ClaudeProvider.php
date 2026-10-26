@@ -14,6 +14,7 @@ declare(strict_types=1);
 namespace SmartBulk\Service\Ai;
 
 use RuntimeException;
+use SmartBulk\Service\Lang;
 use SmartBulk\Service\SettingsService;
 
 final class ClaudeProvider implements AIProviderInterface
@@ -33,36 +34,17 @@ final class ClaudeProvider implements AIProviderInterface
     }
 
     /**
-     * @param array{model?:string,temperature?:float,max_tokens?:int,top_p?:float} $params
+     * @param array{model?:string,temperature?:float,max_tokens?:int,top_p?:float,effort?:string,thinking?:string} $params
      */
     public function generate(string $systemPrompt, string $userPrompt, array $params): AIResponse
     {
         $apiKey = $this->settings->getSecret(SettingsService::KEY_CLAUDE_API_KEY);
         if ($apiKey === '') {
-            throw new RuntimeException('Claude API key is not configured. Set it in Settings → AI providers.');
+            throw new RuntimeException(Lang::t('{provider} API key is not configured. Set it in Settings → AI providers.', ['provider' => 'Claude']));
         }
 
         $model = $params['model'] ?? 'claude-haiku-4-5';
-
-        $body = [
-            'model'      => $model,
-            'max_tokens' => (int) ($params['max_tokens'] ?? 512),
-            'system'     => $systemPrompt,
-            'messages'   => [
-                ['role' => 'user', 'content' => $userPrompt],
-            ],
-        ];
-        // Sampling params (temperature/top_p) were removed from the API on the
-        // generation-5 models (Haiku 5.5, Sonnet 5, Opus 5, Fable 5, ...) -- sending them
-        // now returns a 400 ("temperature is deprecated for this model") instead
-        // of being ignored. Only forward them to models that still accept them.
-        $supportsSampling = !preg_match('/^claude-(?:haiku|sonnet|opus|fable|mythos)-5(?:-\d+)?$/', $model);
-        if ($supportsSampling && isset($params['temperature'])) {
-            $body['temperature'] = (float) $params['temperature'];
-        }
-        if ($supportsSampling && isset($params['top_p'])) {
-            $body['top_p'] = (float) $params['top_p'];
-        }
+        $body = self::buildRequestBody($systemPrompt, $userPrompt, $params);
 
         $start = microtime(true);
         [$status, $response] = $this->httpPost(self::API_URL, $body, [
@@ -74,7 +56,7 @@ final class ClaudeProvider implements AIProviderInterface
 
         if ($status < 200 || $status >= 300) {
             $msg = $response['error']['message'] ?? ('HTTP ' . $status);
-            throw new RuntimeException('Claude API error: ' . $msg);
+            throw new RuntimeException(Lang::t('{provider} API error: {message}', ['provider' => 'Claude', 'message' => $msg]));
         }
 
         $content = '';
@@ -102,6 +84,30 @@ final class ClaudeProvider implements AIProviderInterface
     }
 
     /**
+     * Messages API request body. Which optional fields (temperature, top_p,
+     * output_config.effort, thinking) are sent per model is decided by
+     * ClaudeModelCapabilities — fields a model rejects are left out.
+     *
+     * @param array<string,mixed> $params
+     * @return array<string,mixed>
+     */
+    public static function buildRequestBody(string $systemPrompt, string $userPrompt, array $params): array
+    {
+        $model = (string) ($params['model'] ?? 'claude-haiku-4-5');
+
+        $body = [
+            'model'      => $model,
+            'max_tokens' => (int) ($params['max_tokens'] ?? 512),
+            'system'     => $systemPrompt,
+            'messages'   => [
+                ['role' => 'user', 'content' => $userPrompt],
+            ],
+        ];
+
+        return $body + ClaudeModelCapabilities::requestFields($model, $params);
+    }
+
+    /**
      * @param array<string,mixed> $body
      * @param string[]            $headers
      * @return array{0:int,1:array<string,mixed>} [http_status, decoded_json]
@@ -124,11 +130,11 @@ final class ClaudeProvider implements AIProviderInterface
         curl_close($ch);
 
         if ($raw === false) {
-            throw new RuntimeException('Claude HTTP call failed: ' . $err);
+            throw new RuntimeException(Lang::t('{provider} HTTP call failed: {message}', ['provider' => 'Claude', 'message' => $err]));
         }
         $decoded = json_decode((string) $raw, true);
         if (!is_array($decoded)) {
-            throw new RuntimeException('Claude returned invalid JSON: ' . substr((string) $raw, 0, 200));
+            throw new RuntimeException(Lang::t('{provider} returned invalid JSON: {response}', ['provider' => 'Claude', 'response' => substr((string) $raw, 0, 200)]));
         }
         return [$status, $decoded];
     }

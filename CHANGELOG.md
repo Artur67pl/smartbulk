@@ -7,6 +7,57 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+- **Effort and thinking controls in the prompt editor** (Claude models that support them).
+  Stored as `params.effort` / `params.thinking` in the prompt version JSON — no schema change.
+  The editor offers only what the selected model accepts: temperature is greyed out where the
+  model rejects it, the Effort list appears only on models with `output_config.effort`, and
+  thinking can't be switched off together with `xhigh`/`max`. A hint/warning on Max tokens
+  reminds that thinking tokens count toward the limit.
+- `tests/unit/ClaudeRequestBodyTest.php` — plain-PHP unit tests for the Claude request body
+  (`php tests/unit/ClaudeRequestBodyTest.php`, no PrestaShop needed).
+
+### Changed
+- Per-model request rules live in one table, `ClaudeModelCapabilities` (mirrored in
+  `views/js/app/src/lib/prompts.ts`), replacing the sampling regex in `ClaudeProvider`.
+  Unknown model ids get no temperature/top_p, effort or thinking fields.
+- Claude Opus 4.7 no longer receives temperature/top_p (Anthropic lists sampling params as
+  removed from Claude 4.7 on; not verified against the API).
+- Saving a new prompt version keeps params the editor doesn't manage (`target_field`,
+  `target_lang`, `top_p`, …) instead of dropping them.
+
+### Fixed
+- **Empty, truncated or refused AI output is no longer applied.** A reply with no text,
+  cut off at Max tokens (`max_tokens` / OpenAI `length`) or refused (`refusal` / OpenAI
+  `content_filter`) is stored as a `failed` run with a readable error instead of a `pending`
+  one. Before, accepting it (or the Bulk Editor's `ai_generate` action, which writes
+  directly) put an empty or half-finished value into the product field. With thinking on,
+  the whole Max tokens limit can go to thinking and leave no text.
+- Accepting a pending run with empty output (queued before this fix) is refused.
+- These error messages are translated (Polish in `translations/pl.php`) and shown in the
+  back-office employee's language.
+
+### Translations
+- **The whole module is translatable, with Polish translations.** Previously many texts
+  stayed English in a Polish back office:
+  - React app: hard-coded labels, buttons, toasts and hints (AI Assistant, action builder,
+    Bulk Editor batch view, Dashboard, History, Health, multi-select, password field), and
+    option lists shown raw (condition operators, content gaps, field groups, bulk operators,
+    task types, model names, weekdays). Keys used by the code but missing from the
+    dictionary (e.g. `common.saving`, `ai.bulk_*`) were added.
+  - PHP: every error message thrown by services and API controllers, history summaries,
+    preset segments, field hints/warnings, product-grid actions and columns, and the
+    Product Health panel on the product page.
+- New `SmartBulk\Service\Lang::t()` translates PHP-side messages through the module's
+  legacy translations with `{placeholder}` substitution.
+- SPA dictionary values are HTML-decoded before reaching React (`$this->l()` escapes them,
+  which could show `&quot;` / `&lt;` in the UI).
+- `tests/unit/TranslationsTest.php` checks that every translated PHP string has a Polish
+  entry with the same placeholders and every `t('key')` used by the app exists in the
+  dictionary.
+- The daily AI budget now counts failed runs too: billed-but-unusable replies carry their
+  real cost (provider errors are still stored with cost 0).
+
 ## [1.0.6] — 2026-08-31
 
 ### Changed

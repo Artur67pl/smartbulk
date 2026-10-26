@@ -53,13 +53,15 @@ After [installing](#installation), here's the typical first run:
 
 ### AI Assistant
 
-- **Claude (Haiku 4.5 / Sonnet 4.6 / Opus 4.7)** and **OpenAI (gpt-4o-mini, gpt-4o)** providers
+- **Claude (Haiku 4.5 / Haiku 5.5 / Sonnet 4.6 / Sonnet 5 / Sonnet 5.5 / Opus 4.7 / Opus 5.5)** and **OpenAI (gpt-4o-mini, gpt-4o)** providers
+- **Per-prompt model settings** — temperature, effort and thinking, offered only for models that accept them (see [Model settings](#model-settings-temperature-effort-thinking))
 - 8 task types with auto-apply: `meta_title`, `meta_description`, `short_desc`, `long_desc`, `translate`, `alt_text`, `seo_rewrite`, `tagging`
 - **Prompt Library** with versioning — every change creates a new version, can pin runs to specific versions
 - **Scope picker**: single product (test), saved segment, custom condition tree
 - **Real cost estimate** — renders the prompt against a sample product, counts tokens, multiplies by per-1k rate of the chosen model
 - **Daily budget** + **per-minute rate limit** to prevent surprise bills or 429s
 - **Approval queue** — review every generated output before it's written to the product (or enable auto-accept for trusted prompts)
+- **Unusable output is never applied** — an empty reply, a reply cut off at Max tokens, or a refusal is stored as a `failed` run with the reason, not queued for approval
 
 ### Content Health
 
@@ -163,6 +165,36 @@ The module ships with **8 seeded prompts** (English) covering all task types. Ed
 | `{brand_tone}` | From Settings |
 | `{reference}` / `{price}` / `{id_product}` | Misc context |
 
+#### Model settings (temperature, effort, thinking)
+
+Each prompt version stores its model settings in `params` (JSON). The prompt editor shows
+only the settings the selected model accepts; the server drops anything a model would reject,
+so a prompt never fails with a 400 because of these fields.
+
+- **Temperature** — sent only to models that still accept it (Claude Haiku 4.5, Sonnet 4.6,
+  OpenAI). On the others the field is greyed out and the stored value is not sent.
+- **Effort** (`params.effort`: `low` / `medium` / `high` / `xhigh` / `max`) — how much the model
+  thinks and writes; lower is cheaper and faster. *Default — not sent* leaves the API default.
+- **Thinking** (`params.thinking`: `adaptive` = on, `disabled` = off) — optional. Thinking can
+  only be switched off at effort `high` or lower, so the editor blocks off + `xhigh`/`max`.
+- **Max tokens** — thinking tokens count toward this limit. With thinking on, a small limit can
+  be used up by thinking and leave no text; the editor warns below 1024 tokens (heuristic).
+
+| Model | Temperature | Effort (default) | Thinking by default | Switch thinking off |
+|-------|-------------|------------------|---------------------|---------------------|
+| Claude Haiku 4.5 | yes | — | not configurable | — |
+| Claude Haiku 5.5 | no | low…max (medium) | on | yes, effort ≤ high |
+| Claude Sonnet 4.6 | yes | low, medium, high, max (high) | off | (default) |
+| Claude Sonnet 5 | no | low…max (high) | on | yes, effort ≤ high |
+| Claude Sonnet 5.5 | no | low…max (high) | on | yes (`between_tools`), effort ≤ high |
+| Claude Opus 4.7 | no ¹ | low…max (high) | off | (default) |
+| Claude Opus 5.5 | no | low…max (medium) | always on | not possible |
+| Unknown / other model ids | no | — | not configurable | — |
+
+¹ Not verified against the API; Anthropic's reference lists sampling parameters as removed
+from Claude 4.7 on. The table lives in `src/Service/Ai/ClaudeModelCapabilities.php`, mirrored
+in `views/js/app/src/lib/prompts.ts` — keep both in sync when adding a model.
+
 ---
 
 ## Architecture
@@ -217,6 +249,10 @@ To add a new content-health check: add a problem entry in `src/Service/Health/Co
 **Module appears in product form's Modules tab but is empty**: Twig namespace `@Modules` may not be available in your PS minor version — file an issue with your PS version.
 
 **Schedule not firing**: confirm BO is being accessed (heartbeat fires on BO page loads), or set up the external cron URL in Scheduler view.
+
+**AI run failed with "hit the Max tokens limit before writing any text" or "output was cut off"** (Polish back office: "wyczerpał limit Max tokens" / "ucięta na limicie Max tokens"): the reply ran out of tokens — with thinking on, thinking tokens count toward Max tokens. Raise **Max tokens** in the prompt, or lower **Effort** / switch **Thinking** off where the model allows it. The run is stored as `failed` (its cost still counts toward the daily budget) and nothing is written to the product.
+
+**AI run failed with "The model declined to answer"** (PL: "Model odmówił odpowiedzi"): the provider refused the request (`refusal` / `content_filter`). Check the product data and the prompt wording; nothing is written to the product.
 
 ---
 
