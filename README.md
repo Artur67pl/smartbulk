@@ -2,11 +2,27 @@
 
 > Advanced bulk product management for PrestaShop, with an AI assistant.
 
-**Status:** v1.0.6
-**Author:** [marcingajewski.pl](https://marcingajewski.pl)
+**Status:** v2.0.0 — fork of [GajewskiMarcin/smartbulk](https://github.com/GajewskiMarcin/smartbulk) 1.0.6, maintained at [Artur67pl/smartbulk](https://github.com/Artur67pl/smartbulk)
+**Author:** [marcingajewski.pl](https://marcingajewski.pl) (original module)
 **License:** [AFL-3.0](LICENSE.md)
 **PrestaShop:** 8.x and 9.x
 **PHP:** 8.1+
+
+---
+
+## What this fork adds
+
+On top of upstream 1.0.6 (full list in [CHANGELOG.md](CHANGELOG.md)):
+
+- Claude generation-5 models (Haiku 5.5, Sonnet 5, Sonnet 5.5, Opus 5.5) and per-prompt
+  **temperature / effort / thinking** settings offered only where the model supports them.
+- Empty, truncated or refused AI replies are stored as failed runs instead of being written
+  into products.
+- The whole UI and all messages are translatable, with a complete **Polish** translation.
+- Works with custom back-office folder names.
+
+It keeps the technical name `smartbulk`, so it installs as an upgrade over upstream 1.0.6
+without touching saved prompts or settings.
 
 ---
 
@@ -99,16 +115,18 @@ After [installing](#installation), here's the typical first run:
 
 ### Option A — install from release zip (recommended)
 
-1. Download the latest release from GitHub releases.
+1. Download `smartbulk-<version>.zip` from the [latest release](https://github.com/Artur67pl/smartbulk/releases/latest).
+   (Do not use GitHub's "Download ZIP" button — its folder is named `smartbulk-main`, while
+   PrestaShop needs the folder to be `smartbulk`.)
 2. In PS BO: **Modules → Module Manager → Upload a module** → upload the zip.
-3. Click **Install**.
+3. Click **Install** (on a shop that already has SmartBulk, the upload upgrades it in place).
 4. In sidebar: **Improve → Secret Sauce → SmartBulk** → configure.
 
 ### Option B — install from source (for developers)
 
 ```bash
 cd modules/
-git clone https://github.com/GajewskiMarcin/smartbulk.git smartbulk
+git clone https://github.com/Artur67pl/smartbulk.git smartbulk
 cd smartbulk
 composer install --no-dev
 cd views/js/app

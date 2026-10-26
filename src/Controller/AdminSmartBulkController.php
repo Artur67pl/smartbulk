@@ -35,7 +35,7 @@ final class AdminSmartBulkController extends CompatAdminController
             'links' => [
                 'api'          => $this->generateUrl('smartbulk_api_ping'),
                 'buy_a_coffee' => 'https://buymeacoffee.com/marcingajewski',
-                'github'       => 'https://github.com/GajewskiMarcin/smartbulk',
+                'github'       => 'https://github.com/Artur67pl/smartbulk',
             ],
             'assets_version' => $this->resolveAssetsVersion(),
             // Translations for the React SPA — keyed flat strings.
