@@ -34,6 +34,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   directly) put an empty or half-finished value into the product field. With thinking on,
   the whole Max tokens limit can go to thinking and leave no text.
 - Accepting a pending run with empty output (queued before this fix) is refused.
+- These error messages are translated (Polish in `translations/pl.php`) and shown in the
+  back-office employee's language.
 - The daily AI budget now counts failed runs too: billed-but-unusable replies carry their
   real cost (provider errors are still stored with cost 0).
 

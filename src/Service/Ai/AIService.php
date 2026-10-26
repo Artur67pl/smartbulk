@@ -153,7 +153,7 @@ final class AIService
         // its real token cost) instead of a pending one, so it can't be
         // accepted into the product. The row also marks the product as
         // processed for batches.
-        $unusable = $response->unusableReason();
+        $unusable = $response->unusableReason(fn (string $msg): string => $this->trans($msg));
         if ($unusable !== null) {
             $this->runRepo->insert([
                 'id_prompt_version' => $versionId,
@@ -231,7 +231,11 @@ final class AIService
         }
         // Runs queued before empty output was rejected at generate time.
         if (trim((string) $run['output']) === '') {
-            throw new InvalidArgumentException("Run {$idRun} has empty output — nothing to apply. Reject it and re-run.");
+            throw new InvalidArgumentException(str_replace(
+                '%s',
+                (string) $idRun,
+                $this->trans('Run %s has empty output — nothing to apply. Reject it and re-run.')
+            ));
         }
 
         $version = $this->promptRepo->findVersion((int) $run['id_prompt_version']);
@@ -602,5 +606,15 @@ final class AIService
             $clean[] = $t;
         }
         return array_slice($clean, 0, 20); // sanity cap
+    }
+
+    /**
+     * Translate a user-facing message through the module's legacy
+     * translations (translations/<iso>.php), in the employee's language.
+     */
+    private function trans(string $message): string
+    {
+        $module = \Module::getInstanceByName('smartbulk');
+        return $module ? $module->l($message, 'smartbulk') : $message;
     }
 }

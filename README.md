@@ -250,9 +250,9 @@ To add a new content-health check: add a problem entry in `src/Service/Health/Co
 
 **Schedule not firing**: confirm BO is being accessed (heartbeat fires on BO page loads), or set up the external cron URL in Scheduler view.
 
-**AI run failed with "hit the Max tokens limit before writing any text" or "output was cut off"**: the reply ran out of tokens — with thinking on, thinking tokens count toward Max tokens. Raise **Max tokens** in the prompt, or lower **Effort** / switch **Thinking** off where the model allows it. The run is stored as `failed` (its cost still counts toward the daily budget) and nothing is written to the product.
+**AI run failed with "hit the Max tokens limit before writing any text" or "output was cut off"** (Polish back office: "wyczerpał limit Max tokens" / "ucięta na limicie Max tokens"): the reply ran out of tokens — with thinking on, thinking tokens count toward Max tokens. Raise **Max tokens** in the prompt, or lower **Effort** / switch **Thinking** off where the model allows it. The run is stored as `failed` (its cost still counts toward the daily budget) and nothing is written to the product.
 
-**AI run failed with "The model declined to answer"**: the provider refused the request (`refusal` / `content_filter`). Check the product data and the prompt wording; nothing is written to the product.
+**AI run failed with "The model declined to answer"** (PL: "Model odmówił odpowiedzi"): the provider refused the request (`refusal` / `content_filter`). Check the product data and the prompt wording; nothing is written to the product.
 
 ---
 
