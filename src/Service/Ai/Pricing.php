@@ -23,6 +23,7 @@ final class Pricing
         'claude-sonnet-4-6' => ['in' => 3.00,  'out' => 15.00],
         'claude-opus-4-7'   => ['in' => 5.00,  'out' => 25.00],
         'claude-sonnet-5'   => ['in' => 2.00,  'out' => 10.00],
+        'claude-sonnet-5-5' => ['in' => 2.00,  'out' => 10.00],
         'claude-opus-5'     => ['in' => 5.00,  'out' => 25.00],
         'claude-opus-5-5'   => ['in' => 4.00,  'out' => 20.00],
         'gpt-4o-mini'       => ['in' => 0.15,  'out' => 0.60],
