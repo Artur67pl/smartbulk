@@ -149,6 +149,30 @@ final class AIService
             throw $e;
         }
 
+        // Empty, truncated or refused output is recorded as a failed run (with
+        // its real token cost) instead of a pending one, so it can't be
+        // accepted into the product. The row also marks the product as
+        // processed for batches.
+        $unusable = $response->unusableReason();
+        if ($unusable !== null) {
+            $this->runRepo->insert([
+                'id_prompt_version' => $versionId,
+                'id_massedit'       => $idBatch,
+                'id_product'        => $idProduct,
+                'id_lang'           => $lang,
+                'id_shop'           => $shop,
+                'input_context'     => $productCtx,
+                'output'            => $response->content,
+                'tokens_in'         => $response->tokensIn,
+                'tokens_out'        => $response->tokensOut,
+                'cost_usd'          => $response->costUsd,
+                'latency_ms'        => $response->latencyMs,
+                'status'            => 'failed',
+                'error'             => $unusable,
+            ]);
+            throw new RuntimeException($unusable);
+        }
+
         $idRun = $this->runRepo->insert([
             'id_prompt_version' => $versionId,
             'id_massedit'       => $idBatch,
@@ -204,6 +228,10 @@ final class AIService
         }
         if ($run['status'] !== 'pending') {
             throw new InvalidArgumentException("Run {$idRun} is not pending (status: {$run['status']})");
+        }
+        // Runs queued before empty output was rejected at generate time.
+        if (trim((string) $run['output']) === '') {
+            throw new InvalidArgumentException("Run {$idRun} has empty output — nothing to apply. Reject it and re-run.");
         }
 
         $version = $this->promptRepo->findVersion((int) $run['id_prompt_version']);

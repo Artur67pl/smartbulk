@@ -26,6 +26,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Saving a new prompt version keeps params the editor doesn't manage (`target_field`,
   `target_lang`, `top_p`, …) instead of dropping them.
 
+### Fixed
+- **Empty, truncated or refused AI output is no longer applied.** A reply with no text,
+  cut off at Max tokens (`max_tokens` / OpenAI `length`) or refused (`refusal` / OpenAI
+  `content_filter`) is stored as a `failed` run with a readable error instead of a `pending`
+  one. Before, accepting it (or the Bulk Editor's `ai_generate` action, which writes
+  directly) put an empty or half-finished value into the product field. With thinking on,
+  the whole Max tokens limit can go to thinking and leave no text.
+- Accepting a pending run with empty output (queued before this fix) is refused.
+- The daily AI budget now counts failed runs too: billed-but-unusable replies carry their
+  real cost (provider errors are still stored with cost 0).
+
 ## [1.0.6] — 2026-08-31
 
 ### Changed
