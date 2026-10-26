@@ -7,7 +7,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.0.0] — 2026-10-26
+
+First release of the [Artur67pl/smartbulk](https://github.com/Artur67pl/smartbulk) fork,
+based on upstream [GajewskiMarcin/smartbulk](https://github.com/GajewskiMarcin/smartbulk) 1.0.6.
+The technical module name stays `smartbulk`, so it installs as an upgrade over 1.0.6;
+no database changes — saved prompts, segments, templates and settings are kept.
+
 ### Added
+- **Claude generation-5 models:** Haiku 5.5, Sonnet 5, Sonnet 5.5 and Opus 5.5 in the model
+  list, with pricing (also Opus 5).
 - **Effort and thinking controls in the prompt editor** (Claude models that support them).
   Stored as `params.effort` / `params.thinking` in the prompt version JSON — no schema change.
   The editor offers only what the selected model accepts: temperature is greyed out where the
@@ -18,6 +27,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   (`php tests/unit/ClaudeRequestBodyTest.php`, no PrestaShop needed).
 
 ### Changed
+- Pricing corrected for Haiku 4.5 and Opus 4.7.
+- The SPA's API calls take the first URL segment as the admin folder instead of requiring an
+  "admin" prefix, so custom back-office folder names (e.g. `/cmd775/`) no longer get 404s.
+- The Support page links to this fork's GitHub repository.
 - Per-model request rules live in one table, `ClaudeModelCapabilities` (mirrored in
   `views/js/app/src/lib/prompts.ts`), replacing the sampling regex in `ClaudeProvider`.
   Unknown model ids get no temperature/top_p, effort or thinking fields.
