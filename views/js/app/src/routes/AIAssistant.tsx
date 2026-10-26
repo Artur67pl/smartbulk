@@ -41,9 +41,11 @@ const TASK_CARDS: { type: TaskType; emoji: string; blurb: string }[] = [
 
 // Rough average cost per item, for "estimate before running" hints.
 const COST_ESTIMATES: Record<string, number> = {
-  'claude-haiku-4-5':  0.002,
+  'claude-haiku-4-5':  0.0025,
   'claude-sonnet-4-6': 0.010,
+  'claude-sonnet-5':   0.0067,
   'claude-opus-4-7':   0.050,
+  'claude-opus-5-5':   0.040,
   'gpt-4o-mini':       0.001,
   'gpt-4o':            0.008,
 };

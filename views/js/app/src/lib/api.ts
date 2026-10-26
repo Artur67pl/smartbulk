@@ -5,11 +5,9 @@
 
 function withAdminToken(path: string): string {
   const base = window.location.pathname;
-  // PrestaShop's admin folder takes two forms:
-  //   1. Production install — "admin" + random hash, no dash: /admin0882fzfi8ee8acyer8j/
-  //   2. Dev install        — "admin-dev" (or similar with dash):   /admin-dev/
-  // Match both. Anchored at start; first path segment only.
-  const adminPrefix = base.match(/^\/admin[-_a-z0-9]+/i)?.[0] ?? '';
+  // The admin folder name is arbitrary ("admin…", "admin-dev", or a custom/hidden
+  // name such as "cmd775"), so take the first path segment instead of assuming an "admin" prefix.
+  const adminPrefix = base.match(/^\/[^/]+/i)?.[0] ?? '';
   const token = new URLSearchParams(window.location.search).get('_token') ?? '';
   const url = new URL(adminPrefix + path, window.location.origin);
   if (token) url.searchParams.set('_token', token);

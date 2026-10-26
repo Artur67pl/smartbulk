@@ -52,10 +52,15 @@ final class ClaudeProvider implements AIProviderInterface
                 ['role' => 'user', 'content' => $userPrompt],
             ],
         ];
-        if (isset($params['temperature'])) {
+        // Sampling params (temperature/top_p) were removed from the API on the
+        // generation-5 models (Sonnet 5, Opus 5, Fable 5, ...) -- sending them
+        // now returns a 400 ("temperature is deprecated for this model") instead
+        // of being ignored. Only forward them to models that still accept them.
+        $supportsSampling = !preg_match('/^claude-(?:sonnet|opus|fable|mythos)-5(?:-\d+)?$/', $model);
+        if ($supportsSampling && isset($params['temperature'])) {
             $body['temperature'] = (float) $params['temperature'];
         }
-        if (isset($params['top_p'])) {
+        if ($supportsSampling && isset($params['top_p'])) {
             $body['top_p'] = (float) $params['top_p'];
         }
 
