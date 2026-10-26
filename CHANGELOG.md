@@ -36,6 +36,25 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Accepting a pending run with empty output (queued before this fix) is refused.
 - These error messages are translated (Polish in `translations/pl.php`) and shown in the
   back-office employee's language.
+
+### Translations
+- **The whole module is translatable, with Polish translations.** Previously many texts
+  stayed English in a Polish back office:
+  - React app: hard-coded labels, buttons, toasts and hints (AI Assistant, action builder,
+    Bulk Editor batch view, Dashboard, History, Health, multi-select, password field), and
+    option lists shown raw (condition operators, content gaps, field groups, bulk operators,
+    task types, model names, weekdays). Keys used by the code but missing from the
+    dictionary (e.g. `common.saving`, `ai.bulk_*`) were added.
+  - PHP: every error message thrown by services and API controllers, history summaries,
+    preset segments, field hints/warnings, product-grid actions and columns, and the
+    Product Health panel on the product page.
+- New `SmartBulk\Service\Lang::t()` translates PHP-side messages through the module's
+  legacy translations with `{placeholder}` substitution.
+- SPA dictionary values are HTML-decoded before reaching React (`$this->l()` escapes them,
+  which could show `&quot;` / `&lt;` in the UI).
+- `tests/unit/TranslationsTest.php` checks that every translated PHP string has a Polish
+  entry with the same placeholders and every `t('key')` used by the app exists in the
+  dictionary.
 - The daily AI budget now counts failed runs too: billed-but-unusable replies carry their
   real cost (provider errors are still stored with cost 0).
 

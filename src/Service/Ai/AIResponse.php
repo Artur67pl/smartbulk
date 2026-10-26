@@ -26,17 +26,17 @@ final class AIResponse
     }
 
     /*
-     * Messages for unusable replies; %s is replaced with the stop reason.
+     * Messages for unusable replies; {stop_reason} is filled in after translating.
      * Plain str_replace, not sprintf, so a damaged translation can't throw.
      * Polish versions live in translations/pl.php. Keep them free of
      * apostrophes and HTML characters: PrestaShop hashes and escapes them.
      */
-    public const MSG_REFUSED = 'The model declined to answer (stop_reason: %s). Nothing was applied.';
-    public const MSG_NO_TEXT_AT_LIMIT = 'The model hit the Max tokens limit before writing any text (stop_reason: %s). '
+    public const MSG_REFUSED = 'The model declined to answer (stop_reason: {stop_reason}). Nothing was applied.';
+    public const MSG_NO_TEXT_AT_LIMIT = 'The model hit the Max tokens limit before writing any text (stop_reason: {stop_reason}). '
         . 'Thinking tokens count toward the limit — raise Max tokens in the prompt, or lower effort / switch thinking off.';
-    public const MSG_CUT_OFF = 'The output was cut off at the Max tokens limit (stop_reason: %s); the partial text was not applied. '
+    public const MSG_CUT_OFF = 'The output was cut off at the Max tokens limit (stop_reason: {stop_reason}); the partial text was not applied. '
         . 'Raise Max tokens in the prompt.';
-    public const MSG_EMPTY = 'The model returned no text (stop_reason: %s). Nothing was applied.';
+    public const MSG_EMPTY = 'The model returned no text (stop_reason: {stop_reason}). Nothing was applied.';
 
     /**
      * Why this response must not be applied, or null when it's usable.
@@ -63,6 +63,6 @@ final class AIResponse
             return null;
         }
 
-        return str_replace('%s', $stop, $translate ? $translate($template) : $template);
+        return str_replace('{stop_reason}', $stop, $translate ? $translate($template) : $template);
     }
 }

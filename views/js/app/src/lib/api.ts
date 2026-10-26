@@ -3,6 +3,8 @@
 // Admin-dev URLs carry a _token query param added by PS for CSRF. We read it off
 // the current location so API calls inherit the session automatically.
 
+import { t2 } from './i18n';
+
 function withAdminToken(path: string): string {
   const base = window.location.pathname;
   // The admin folder name is arbitrary ("admin…", "admin-dev", or a custom/hidden
@@ -39,7 +41,7 @@ async function request<T>(path: string, init: RequestInit = {}): Promise<T> {
 
   if (!res.ok) {
     const err = new Error(
-      (payload as { error?: string })?.error ?? `HTTP ${res.status}`
+      (payload as { error?: string })?.error ?? t2('err.http', 'Server error (HTTP {status})', { status: res.status })
     ) as ApiError;
     err.status = res.status;
     err.payload = payload;

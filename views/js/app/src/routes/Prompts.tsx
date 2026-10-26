@@ -100,7 +100,7 @@ export default function Prompts() {
             >
               <option value="">{t('prompts.all_task_types', 'All task types')}</option>
               {(Object.entries(TASK_TYPE_LABELS) as [TaskType, string][]).map(([k, v]) => (
-                <option key={k} value={k}>{v}</option>
+                <option key={k} value={k}>{t('task.' + k, v)}</option>
               ))}
             </Select>
           </div>
@@ -205,7 +205,7 @@ function PromptListItem({
         {prompt.name}
       </div>
       <div className="text-[11px] text-muted-foreground mt-0.5 truncate">
-        {TASK_TYPE_LABELS[prompt.task_type]}
+        {t('task.' + prompt.task_type, TASK_TYPE_LABELS[prompt.task_type])}
         {prompt.current_version_number && ` · v${prompt.current_version_number}`}
         {prompt.current_provider && ` · ${prompt.current_provider}`}
       </div>
@@ -261,7 +261,7 @@ function NewPromptForm({
         <Field label={t('prompts.field_task_type', 'Task type')} required>
           <Select value={taskType} onChange={(e) => setTaskType(e.target.value as TaskType)}>
             {(Object.entries(TASK_TYPE_LABELS) as [TaskType, string][]).map(([k, v]) => (
-              <option key={k} value={k}>{v}</option>
+              <option key={k} value={k}>{t('task.' + k, v)}</option>
             ))}
           </Select>
         </Field>
@@ -281,7 +281,7 @@ function NewPromptForm({
         <Field label={t('prompts.field_model', 'Model')}>
           <Select value={model} onChange={(e) => setModel(e.target.value)}>
             {MODELS_BY_PROVIDER[provider].map((m) => (
-              <option key={m.id} value={m.id}>{m.label}</option>
+              <option key={m.id} value={m.id}>{t('model.' + m.id, m.label)}</option>
             ))}
           </Select>
         </Field>
@@ -427,7 +427,7 @@ function PromptDetailEditor({
             <>
               <span className="font-mono text-[11px]">{prompt.slug}</span>
               {' · '}
-              {TASK_TYPE_LABELS[prompt.task_type]}
+              {t('task.' + prompt.task_type, TASK_TYPE_LABELS[prompt.task_type])}
               {currentVersion && ` · ${t2('prompts.current_v', 'current: v{v}', { v: currentVersion.version_number })}`}
             </>
           }
@@ -469,7 +469,7 @@ function PromptDetailEditor({
           <Field label={t('prompts.field_model', 'Model')}>
             <Select value={model} onChange={(e) => setModel(e.target.value)}>
               {MODELS_BY_PROVIDER[provider].map((m) => (
-                <option key={m.id} value={m.id}>{m.label}</option>
+                <option key={m.id} value={m.id}>{t('model.' + m.id, m.label)}</option>
               ))}
             </Select>
           </Field>

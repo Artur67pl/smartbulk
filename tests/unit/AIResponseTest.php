@@ -75,24 +75,16 @@ $tagged = static fn (string $m): string => '[pl] ' . $m;
 check('translator is applied to the template', str_starts_with((string) response('', 'refusal')->unusableReason($tagged), '[pl] The model declined'));
 check('stop reason filled in after translating', str_contains((string) response('', 'refusal')->unusableReason($tagged), 'stop_reason: refusal'));
 // A translation that lost or mangled the placeholder must not throw.
-check('damaged translation does not throw', response('', 'refusal')->unusableReason(static fn (string $m): string => '100% %S zepsute') === '100% %S zepsute');
+check('damaged translation does not throw', response('', 'refusal')->unusableReason(static fn (string $m): string => '100% %s {stop} zepsute') === '100% %s {stop} zepsute');
 
-// Same lookup as PrestaShop's legacy module translations: md5 of the source string.
-$plMessage = static function (string $source): ?string {
-    global $_MODULE;
-    return $_MODULE['<{smartbulk}prestashop>smartbulk_' . md5($source)] ?? null;
-};
+// Polish text via the same lookup PrestaShop uses (md5 of the source string);
+// coverage of every message is in TranslationsTest.php.
 require __DIR__ . '/../../translations/pl.php';
-$sources = [
-    AIResponse::MSG_REFUSED, AIResponse::MSG_NO_TEXT_AT_LIMIT, AIResponse::MSG_CUT_OFF, AIResponse::MSG_EMPTY,
-    'Run %s has empty output — nothing to apply. Reject it and re-run.', // AIService::accept()
-];
-foreach ($sources as $src) {
-    $pl = $plMessage($src);
-    check('pl.php translates: ' . substr($src, 0, 40) . '…', $pl !== null && $pl !== $src && substr_count($pl, '%s') === 1);
-}
-$pl = response('', 'max_tokens')->unusableReason(static fn (string $m): string => $plMessage($m) ?? $m);
-check('Polish message for empty reply at max_tokens', $pl === str_replace('%s', 'max_tokens', (string) $plMessage(AIResponse::MSG_NO_TEXT_AT_LIMIT)));
+$pl = response('', 'max_tokens')->unusableReason(static function (string $m): string {
+    global $_MODULE;
+    return $_MODULE['<{smartbulk}prestashop>smartbulk_' . md5($m)] ?? $m;
+});
+check('Polish message for empty reply at max_tokens', str_starts_with((string) $pl, 'Model wyczerpał limit Max tokens') && str_contains((string) $pl, 'stop_reason: max_tokens'));
 
 printf("\n%d checks, %d failed\n", $count, $failures);
 exit($failures === 0 ? 0 : 1);
